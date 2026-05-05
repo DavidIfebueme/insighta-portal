@@ -1,16 +1,12 @@
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
-
 async function apiFetch(path: string, options: RequestInit = {}) {
   const headers: Record<string, string> = {
-    "X-API-Version": "1",
     "Content-Type": "application/json",
     ...(options.headers as Record<string, string>),
   };
 
-  const res = await fetch(`${API_URL}${path}`, {
+  const res = await fetch(path, {
     ...options,
     headers,
-    credentials: "include",
   });
 
   if (!res.ok) {
@@ -21,43 +17,45 @@ async function apiFetch(path: string, options: RequestInit = {}) {
   return res;
 }
 
-export function getLoginUrl(redirectUrl: string) {
-  return `${API_URL}/auth/github?redirect_url=${encodeURIComponent(redirectUrl)}`;
-}
-
 export async function getAuthUrl(redirectUrl?: string) {
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
   const path = redirectUrl
     ? `/auth/github?redirect_url=${encodeURIComponent(redirectUrl)}`
     : "/auth/github";
-  const res = await apiFetch(path);
+  const res = await fetch(`${API_URL}${path}`, {
+    headers: { "X-API-Version": "1" },
+  });
   return res.json();
 }
 
 export async function getMe() {
-  const res = await apiFetch("/auth/me");
+  const res = await apiFetch("/api/auth/me");
   return res.json();
 }
 
 export async function listProfiles(params: Record<string, string> = {}) {
   const qs = new URLSearchParams(params).toString();
-  const res = await apiFetch(`/api/profiles?${qs}`);
+  const res = await apiFetch(`/api/proxy/profiles?${qs}`);
   return res.json();
 }
 
 export async function getProfile(id: string) {
-  const res = await apiFetch(`/api/profiles/${id}`);
+  const res = await apiFetch(`/api/proxy/profiles/${id}`);
   return res.json();
 }
 
 export async function searchProfiles(q: string, page = 1, limit = 10) {
-  const res = await apiFetch(
-    `/api/profiles/search?q=${encodeURIComponent(q)}&page=${page}&limit=${limit}`
-  );
+  const qs = new URLSearchParams({
+    q,
+    page: page.toString(),
+    limit: limit.toString(),
+  }).toString();
+  const res = await apiFetch(`/api/proxy/profiles/search?${qs}`);
   return res.json();
 }
 
 export async function createProfile(name: string) {
-  const res = await apiFetch("/api/profiles", {
+  const res = await apiFetch("/api/proxy/profiles", {
     method: "POST",
     body: JSON.stringify({ name }),
   });
@@ -65,22 +63,17 @@ export async function createProfile(name: string) {
 }
 
 export async function deleteProfile(id: string) {
-  await apiFetch(`/api/profiles/${id}`, {
+  await apiFetch(`/api/proxy/profiles/${id}`, {
     method: "DELETE",
   });
 }
 
 export async function exportProfiles(params: Record<string, string> = {}) {
   const qs = new URLSearchParams({ format: "csv", ...params }).toString();
-  const res = await apiFetch(`/api/profiles/export?${qs}`);
+  const res = await apiFetch(`/api/proxy/profiles/export?${qs}`);
   return res.text();
 }
 
 export async function logout() {
-  await apiFetch("/auth/logout", {
-    method: "POST",
-    body: JSON.stringify({ refresh_token: "" }),
-  });
+  await apiFetch("/api/auth/logout", { method: "POST" });
 }
-
-export { API_URL };
