@@ -17,17 +17,6 @@ async function apiFetch(path: string, options: RequestInit = {}) {
   return res;
 }
 
-export async function getAuthUrl(redirectUrl?: string) {
-  const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
-  const path = redirectUrl
-    ? `/auth/github?redirect_url=${encodeURIComponent(redirectUrl)}`
-    : "/auth/github";
-  const res = await fetch(`${API_URL}${path}`, {
-    headers: { "X-API-Version": "1" },
-  });
-  return res.json();
-}
-
 export async function getMe() {
   const res = await apiFetch("/api/auth/me");
   return res.json();

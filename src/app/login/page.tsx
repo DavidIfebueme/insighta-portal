@@ -3,7 +3,8 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth";
-import { getAuthUrl } from "@/lib/api";
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
 
 export default function LoginPage() {
   const { user, loading } = useAuth();
@@ -15,14 +16,9 @@ export default function LoginPage() {
     }
   }, [user, loading, router]);
 
-  async function handleLogin() {
-    try {
-      const redirectUrl = window.location.origin + "/api/auth/callback";
-      const data = await getAuthUrl(redirectUrl);
-      window.location.href = data.data.url;
-    } catch (err) {
-      console.error("Failed to initiate login:", err);
-    }
+  function handleLogin() {
+    const redirectUrl = encodeURIComponent(window.location.origin + "/api/auth/callback");
+    window.location.href = `${API_URL}/auth/github?redirect_url=${redirectUrl}`;
   }
 
   if (loading) {
