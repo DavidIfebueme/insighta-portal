@@ -82,20 +82,23 @@ export default function ProfilesPage() {
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-6 py-8">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Profiles</h1>
-        <div className="flex gap-2">
+    <div className="max-w-7xl mx-auto px-6 py-12">
+      <div className="flex justify-between items-end mb-10">
+        <div>
+          <h1 className="text-3xl font-semibold tracking-tight text-zinc-900">Profiles</h1>
+          <p className="text-zinc-500 mt-2 text-sm">Browse and filter user profiles</p>
+        </div>
+        <div className="flex gap-3">
           <button
             onClick={handleExport}
-            className="bg-green-600 text-white px-4 py-2 rounded text-sm hover:bg-green-700"
+            className="bg-white border border-zinc-200 text-zinc-700 px-5 py-2.5 rounded-lg text-sm font-medium hover:bg-zinc-50 hover:text-zinc-900 transition-colors shadow-sm"
           >
             Export CSV
           </button>
           {user?.role === "admin" && (
             <button
               onClick={() => router.push("/profiles?action=create")}
-              className="bg-indigo-600 text-white px-4 py-2 rounded text-sm hover:bg-indigo-700"
+              className="bg-zinc-900 text-white px-5 py-2.5 rounded-lg text-sm font-medium hover:bg-zinc-800 transition-colors shadow-sm"
             >
               Create Profile
             </button>
@@ -103,12 +106,12 @@ export default function ProfilesPage() {
         </div>
       </div>
 
-      <div className="bg-white rounded-lg shadow mb-6 p-4">
-        <div className="flex flex-wrap gap-4">
+      <div className="bg-white rounded-2xl border border-zinc-200 shadow-sm mb-8 p-6">
+        <div className="flex flex-wrap gap-4 items-center">
           <select
             value={gender}
             onChange={(e) => { setGender(e.target.value); setPage(1); }}
-            className="border rounded px-3 py-2 text-sm"
+            className="border-zinc-200 bg-white rounded-lg px-4 py-2.5 text-sm outline-none focus:ring-2 focus:border-zinc-300 focus:ring-zinc-100 transition-all font-medium text-zinc-700 hover:border-zinc-300"
           >
             <option value="">All Genders</option>
             <option value="male">Male</option>
@@ -119,12 +122,12 @@ export default function ProfilesPage() {
             placeholder="Country code (e.g. NG)"
             value={country}
             onChange={(e) => { setCountry(e.target.value.toUpperCase()); setPage(1); }}
-            className="border rounded px-3 py-2 text-sm w-40"
+            className="border-zinc-200 bg-white border rounded-lg px-4 py-2.5 text-sm w-48 outline-none focus:ring-2 focus:border-zinc-300 focus:ring-zinc-100 transition-all font-medium text-zinc-800 placeholder-zinc-400 hover:border-zinc-300"
           />
           <select
             value={ageGroup}
             onChange={(e) => { setAgeGroup(e.target.value); setPage(1); }}
-            className="border rounded px-3 py-2 text-sm"
+            className="border-zinc-200 bg-white border rounded-lg px-4 py-2.5 text-sm outline-none focus:ring-2 focus:border-zinc-300 focus:ring-zinc-100 transition-all font-medium text-zinc-700 hover:border-zinc-300"
           >
             <option value="">All Age Groups</option>
             <option value="child">Child</option>
@@ -132,10 +135,11 @@ export default function ProfilesPage() {
             <option value="adult">Adult</option>
             <option value="senior">Senior</option>
           </select>
+          <div className="h-6 w-px bg-zinc-200 mx-2 hidden md:block"></div>
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value)}
-            className="border rounded px-3 py-2 text-sm"
+            className="border-zinc-200 bg-white border rounded-lg px-4 py-2.5 text-sm outline-none focus:ring-2 focus:border-zinc-300 focus:ring-zinc-100 transition-all font-medium text-zinc-700 hover:border-zinc-300"
           >
             <option value="created_at">Sort by Date</option>
             <option value="age">Sort by Age</option>
@@ -144,7 +148,7 @@ export default function ProfilesPage() {
           <select
             value={order}
             onChange={(e) => setOrder(e.target.value)}
-            className="border rounded px-3 py-2 text-sm"
+            className="border-zinc-200 bg-white border rounded-lg px-4 py-2.5 text-sm outline-none focus:ring-2 focus:border-zinc-300 focus:ring-zinc-100 transition-all font-medium text-zinc-700 hover:border-zinc-300"
           >
             <option value="desc">Descending</option>
             <option value="asc">Ascending</option>
@@ -153,56 +157,64 @@ export default function ProfilesPage() {
       </div>
 
       {loading ? (
-        <div className="text-center py-8 text-gray-700">Loading...</div>
+        <div className="flex justify-center items-center py-20">
+          <div className="w-8 h-8 border-2 border-zinc-200 border-t-zinc-900 rounded-full animate-spin"></div>
+        </div>
       ) : (
         <>
-          <div className="bg-white rounded-lg shadow overflow-hidden">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase">Name</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase">Gender</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase">Age</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase">Country</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase">Gender Prob</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase">Country Prob</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-200">
-                {profiles.map((p) => (
-                  <tr
-                    key={p.id}
-                    className="hover:bg-gray-50 cursor-pointer"
-                    onClick={() => router.push(`/profiles/${p.id}`)}
-                  >
-                    <td className="px-6 py-4 text-sm font-medium text-gray-900">{p.name}</td>
-                    <td className="px-6 py-4 text-sm text-gray-700 capitalize">{p.gender}</td>
-                    <td className="px-6 py-4 text-sm text-gray-700">{p.age} ({p.age_group})</td>
-                    <td className="px-6 py-4 text-sm text-gray-700">{p.country_name} ({p.country_id})</td>
-                    <td className="px-6 py-4 text-sm text-gray-700">{(p.gender_probability * 100).toFixed(0)}%</td>
-                    <td className="px-6 py-4 text-sm text-gray-700">{(p.country_probability * 100).toFixed(0)}%</td>
+          <div className="bg-white rounded-2xl border border-zinc-200 shadow-sm overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-zinc-100">
+                <thead className="bg-zinc-50/50">
+                  <tr>
+                    <th className="px-8 py-4 text-left text-xs font-semibold text-zinc-500 uppercase tracking-wider">Name</th>
+                    <th className="px-8 py-4 text-left text-xs font-semibold text-zinc-500 uppercase tracking-wider">Gender</th>
+                    <th className="px-8 py-4 text-left text-xs font-semibold text-zinc-500 uppercase tracking-wider">Age</th>
+                    <th className="px-8 py-4 text-left text-xs font-semibold text-zinc-500 uppercase tracking-wider">Country</th>
+                    <th className="px-8 py-4 text-left text-xs font-semibold text-zinc-500 uppercase tracking-wider">Gender Prob</th>
+                    <th className="px-8 py-4 text-left text-xs font-semibold text-zinc-500 uppercase tracking-wider">Country Prob</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody className="divide-y divide-zinc-100 bg-white">
+                  {profiles.map((p) => (
+                    <tr
+                      key={p.id}
+                      className="hover:bg-zinc-50/80 cursor-pointer transition-colors"
+                      onClick={() => router.push(`/profiles/${p.id}`)}
+                    >
+                      <td className="px-8 py-5 text-sm font-medium text-zinc-900">{p.name}</td>
+                      <td className="px-8 py-5 text-sm text-zinc-600 capitalize">
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-zinc-100 text-zinc-800">
+                          {p.gender}
+                        </span>
+                      </td>
+                      <td className="px-8 py-5 text-sm text-zinc-600">{p.age} <span className="text-zinc-400 ml-1">({p.age_group})</span></td>
+                      <td className="px-8 py-5 text-sm text-zinc-900 font-medium">{p.country_name} <span className="text-zinc-400 font-normal ml-1">({p.country_id})</span></td>
+                      <td className="px-8 py-5 text-sm text-zinc-600">{(p.gender_probability * 100).toFixed(0)}%</td>
+                      <td className="px-8 py-5 text-sm text-zinc-600">{(p.country_probability * 100).toFixed(0)}%</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
 
-          <div className="flex justify-between items-center mt-4">
-            <p className="text-sm text-gray-700">
-              {total.toLocaleString()} profiles · Page {page} of {totalPages}
+          <div className="flex justify-between items-center mt-8">
+            <p className="text-sm font-medium text-zinc-500">
+              Showing <span className="text-zinc-900">{total.toLocaleString()}</span> profiles <span className="mx-2">•</span> Page <span className="text-zinc-900">{page}</span> of {totalPages}
             </p>
-            <div className="flex gap-2">
+            <div className="flex gap-3">
               <button
                 disabled={page <= 1}
                 onClick={() => setPage(page - 1)}
-                className="px-4 py-2 text-sm border rounded disabled:opacity-50"
+                className="px-4 py-2 text-sm font-medium border border-zinc-200 text-zinc-700 bg-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-zinc-50 transition-colors shadow-sm"
               >
                 Previous
               </button>
               <button
                 disabled={page >= totalPages}
                 onClick={() => setPage(page + 1)}
-                className="px-4 py-2 text-sm border rounded disabled:opacity-50"
+                className="px-4 py-2 text-sm font-medium border border-zinc-200 text-zinc-700 bg-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-zinc-50 transition-colors shadow-sm"
               >
                 Next
               </button>

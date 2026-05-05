@@ -20,35 +20,35 @@ export function Navbar() {
   if (!user) return null;
 
   return (
-    <nav className="bg-white border-b border-gray-200 px-6 py-3">
+    <nav className="bg-white border-b border-zinc-200 px-6 py-4 sticky top-0 z-50">
       <div className="max-w-7xl mx-auto flex items-center justify-between">
-        <div className="flex items-center gap-6">
-          <Link href="/dashboard" className="text-xl font-bold text-indigo-600">
+        <div className="flex items-center gap-8">
+          <Link href="/dashboard" className="text-xl font-medium tracking-tight text-zinc-900">
             Insighta Labs+
           </Link>
-          <div className="flex gap-4 text-sm">
-            <Link href="/dashboard" className="text-gray-600 hover:text-gray-900">
+          <div className="flex gap-6 text-sm font-medium">
+            <Link href="/dashboard" className="text-zinc-500 hover:text-zinc-900 transition-colors">
               Dashboard
             </Link>
-            <Link href="/profiles" className="text-gray-600 hover:text-gray-900">
+            <Link href="/profiles" className="text-zinc-500 hover:text-zinc-900 transition-colors">
               Profiles
             </Link>
-            <Link href="/search" className="text-gray-600 hover:text-gray-900">
+            <Link href="/search" className="text-zinc-500 hover:text-zinc-900 transition-colors">
               Search
             </Link>
-            <Link href="/account" className="text-gray-600 hover:text-gray-900">
+            <Link href="/account" className="text-zinc-500 hover:text-zinc-900 transition-colors">
               Account
             </Link>
           </div>
         </div>
-        <div className="flex items-center gap-3">
-          <span className="text-sm text-gray-700">@{user.username}</span>
-          <span className="text-xs bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded">
+        <div className="flex items-center gap-4">
+          <span className="text-sm font-medium text-zinc-700">@{user.username}</span>
+          <span className="text-xs font-semibold bg-zinc-100 text-zinc-800 px-2 py-1 rounded-md uppercase tracking-wider">
             {user.role}
           </span>
           <button
             onClick={handleLogout}
-            className="text-sm text-red-600 hover:text-red-800"
+            className="text-sm font-medium text-zinc-500 hover:text-zinc-900 transition-colors"
           >
             Logout
           </button>

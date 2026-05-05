@@ -42,12 +42,12 @@ export default function DashboardPage() {
 
   if (loading || authLoading) {
     return (
-      <div className="max-w-7xl mx-auto px-6 py-8">
-        <div className="animate-pulse space-y-4">
-          <div className="h-8 bg-gray-200 rounded w-1/4" />
-          <div className="grid grid-cols-3 gap-4">
+      <div className="max-w-7xl mx-auto px-6 py-12">
+        <div className="animate-pulse space-y-6">
+          <div className="h-10 bg-zinc-200/50 rounded-lg w-1/4" />
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {[1, 2, 3].map((i) => (
-              <div key={i} className="h-24 bg-gray-200 rounded" />
+              <div key={i} className="h-32 bg-zinc-200/50 rounded-2xl border border-zinc-100" />
             ))}
           </div>
         </div>
@@ -56,40 +56,40 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-6 py-8">
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">Dashboard</h1>
+    <div className="max-w-7xl mx-auto px-6 py-12">
+      <h1 className="text-3xl font-semibold tracking-tight text-zinc-900 mb-8">Dashboard</h1>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <div className="bg-white rounded-lg shadow p-6">
-          <p className="text-sm text-gray-500">Total Profiles</p>
-          <p className="text-3xl font-bold text-indigo-600">{total.toLocaleString()}</p>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+        <div className="bg-white rounded-2xl border border-zinc-200 p-8 shadow-sm">
+          <p className="text-sm font-medium text-zinc-500 mb-2">Total Profiles</p>
+          <p className="text-4xl font-semibold text-zinc-900">{total.toLocaleString()}</p>
         </div>
-        <div className="bg-white rounded-lg shadow p-6">
-          <p className="text-sm text-gray-500">Your Role</p>
-          <p className="text-3xl font-bold text-gray-900 capitalize">{user?.role}</p>
+        <div className="bg-white rounded-2xl border border-zinc-200 p-8 shadow-sm">
+          <p className="text-sm font-medium text-zinc-500 mb-2">Your Role</p>
+          <p className="text-4xl font-semibold text-zinc-900 capitalize">{user?.role}</p>
         </div>
-        <div className="bg-white rounded-lg shadow p-6">
-          <p className="text-sm text-gray-500">Welcome</p>
-          <p className="text-3xl font-bold text-gray-900">@{user?.username}</p>
+        <div className="bg-white rounded-2xl border border-zinc-200 p-8 shadow-sm">
+          <p className="text-sm font-medium text-zinc-500 mb-2">Welcome</p>
+          <p className="text-4xl font-semibold text-zinc-900 truncate">@{user?.username}</p>
         </div>
       </div>
 
-      <div className="bg-white rounded-lg shadow">
-        <div className="px-6 py-4 border-b border-gray-200">
-          <h2 className="text-lg font-semibold">Recent Profiles</h2>
+      <div className="bg-white rounded-2xl border border-zinc-200 shadow-sm overflow-hidden">
+        <div className="px-8 py-6 border-b border-zinc-100 bg-zinc-50/50">
+          <h2 className="text-lg font-medium text-zinc-900">Recent Profiles</h2>
         </div>
-        <div className="divide-y divide-gray-200">
+        <div className="divide-y divide-zinc-100">
           {recent.map((p) => (
             <div
               key={p.id}
-              className="px-6 py-4 hover:bg-gray-50 cursor-pointer"
+              className="px-8 py-5 hover:bg-zinc-50 cursor-pointer transition-colors"
               onClick={() => router.push(`/profiles/${p.id}`)}
             >
-              <div className="flex justify-between">
+              <div className="flex justify-between items-center">
                 <div>
-                  <p className="font-medium text-gray-900">{p.name}</p>
-                  <p className="text-sm text-gray-500">
-                    {p.gender} · {p.age} years · {p.country_name}
+                  <p className="font-medium text-zinc-900">{p.name}</p>
+                  <p className="text-sm text-zinc-500 mt-1">
+                    <span className="capitalize">{p.gender}</span> <span className="mx-1.5 text-zinc-300">•</span> {p.age} years <span className="mx-1.5 text-zinc-300">•</span> {p.country_name}
                   </p>
                 </div>
               </div>

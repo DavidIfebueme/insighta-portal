@@ -55,52 +55,74 @@ export default function ProfileDetailPage() {
   }
 
   if (loading) {
-    return <div className="max-w-7xl mx-auto px-6 py-8 text-gray-700">Loading...</div>;
+    return (
+      <div className="flex justify-center items-center py-20">
+        <div className="w-8 h-8 border-2 border-zinc-200 border-t-zinc-900 rounded-full animate-spin"></div>
+      </div>
+    );
   }
 
   if (!profile) {
-    return <div className="max-w-7xl mx-auto px-6 py-8 text-red-500">Profile not found</div>;
+    return (
+      <div className="max-w-7xl mx-auto px-6 py-12 text-center">
+        <h2 className="text-xl font-semibold text-zinc-900">Profile not found</h2>
+        <p className="text-zinc-500 mt-2">The profile you are looking for does not exist or has been removed.</p>
+        <button onClick={() => router.push("/profiles")} className="mt-6 text-sm font-medium text-zinc-900 underline underline-offset-4 hover:text-zinc-600">
+          Return to directory
+        </button>
+      </div>
+    );
   }
 
   return (
-    <div className="max-w-3xl mx-auto px-6 py-8">
-      <div className="bg-white rounded-lg shadow p-6">
-        <div className="flex justify-between items-start mb-6">
-          <h1 className="text-2xl font-bold text-gray-900">{profile.name}</h1>
+    <div className="max-w-3xl mx-auto px-6 py-12">
+      <button 
+        onClick={() => router.push("/profiles")}
+        className="mb-8 text-sm font-medium text-zinc-500 hover:text-zinc-900 transition-colors flex items-center gap-2"
+      >
+        ← Back to profiles
+      </button>
+
+      <div className="bg-white rounded-3xl border border-zinc-200 shadow-sm p-10">
+        <div className="flex justify-between items-start mb-10 pb-8 border-b border-zinc-100">
+          <div>
+            <h1 className="text-3xl font-semibold tracking-tight text-zinc-900">{profile.name}</h1>
+            <p className="text-zinc-500 mt-2 text-sm">Profile ID: {profile.id}</p>
+          </div>
           {user?.role === "admin" && (
             <button
               onClick={handleDelete}
-              className="text-red-600 text-sm hover:text-red-800"
+              className="bg-red-50 text-red-600 hover:bg-red-100 px-4 py-2 rounded-lg text-sm font-medium transition-colors"
             >
-              Delete
+              Delete Profile
             </button>
           )}
         </div>
 
-        <div className="grid grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-10">
           <div>
-            <p className="text-sm text-gray-500">Gender</p>
-            <p className="font-medium capitalize">{profile.gender}</p>
+            <p className="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-2">Gender</p>
+            <p className="text-lg font-medium text-zinc-900 capitalize">{profile.gender}</p>
           </div>
           <div>
-            <p className="text-sm text-gray-500">Gender Probability</p>
-            <p className="font-medium">{(profile.gender_probability * 100).toFixed(1)}%</p>
+            <p className="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-2">Gender Probability</p>
+            <p className="text-lg font-medium text-zinc-900">{(profile.gender_probability * 100).toFixed(1)}%</p>
           </div>
           <div>
-            <p className="text-sm text-gray-500">Age</p>
-            <p className="font-medium">{profile.age} years ({profile.age_group})</p>
+            <p className="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-2">Age</p>
+            <p className="text-lg font-medium text-zinc-900">{profile.age} years <span className="text-zinc-400 text-base font-normal ml-1">({profile.age_group})</span></p>
           </div>
           <div>
-            <p className="text-sm text-gray-500">Country</p>
-            <p className="font-medium">{profile.country_name} ({profile.country_id})</p>
+            <p className="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-2">Country</p>
+            <p className="text-lg font-medium text-zinc-900">{profile.country_name} <span className="text-zinc-400 text-base font-normal ml-1">({profile.country_id})</span></p>
           </div>
           <div>
-            <p className="text-sm text-gray-500">Country Probability</p>
-            <p className="font-medium">{(profile.country_probability * 100).toFixed(1)}%</p>
+            <p className="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-2">Country Probability</p>
+            <p className="text-lg font-medium text-zinc-900">{(profile.country_probability * 100).toFixed(1)}%</p>
           </div>
           <div>
-            <p className="text-sm text-gray-500">Created</p>
-            <p className="font-medium">{new Date(profile.created_at).toLocaleDateString()}</p>
+            <p className="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-2">Profile Created</p>
+            <p className="text-lg font-medium text-zinc-900">{new Date(profile.created_at).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}</p>
           </div>
         </div>
       </div>
