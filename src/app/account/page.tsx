@@ -1,18 +1,19 @@
 "use client";
 
 import { useAuth } from "@/lib/auth";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
 export default function AccountPage() {
-  const { user, token } = useAuth();
+  const { user, loading } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
-    if (!token) {
+    if (!loading && !user) {
       router.push("/login");
     }
-  }, [token]);
+  }, [user, loading, router]);
 
   if (!user) return null;
 
@@ -23,7 +24,7 @@ export default function AccountPage() {
       <div className="bg-white rounded-lg shadow p-6">
         <div className="flex items-center gap-4 mb-6">
           {user.avatar_url ? (
-            <img src={user.avatar_url} alt="" className="w-16 h-16 rounded-full" />
+            <Image src={user.avatar_url} alt="" width={64} height={64} className="w-16 h-16 rounded-full" />
           ) : (
             <div className="w-16 h-16 rounded-full bg-indigo-100 flex items-center justify-center text-2xl text-indigo-600">
               {user.username[0].toUpperCase()}

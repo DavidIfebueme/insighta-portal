@@ -6,16 +6,14 @@ import { useRouter } from "next/navigation";
 import { logout as apiLogout } from "@/lib/api";
 
 export function Navbar() {
-  const { user, token, refreshTokenValue, logout } = useAuth();
+  const { user, setUser } = useAuth();
   const router = useRouter();
 
   async function handleLogout() {
-    if (token && refreshTokenValue) {
-      try {
-        await apiLogout(token, refreshTokenValue);
-      } catch {}
-    }
-    logout();
+    try {
+      await apiLogout();
+    } catch {}
+    setUser(null);
     router.push("/login");
   }
 

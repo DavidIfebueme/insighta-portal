@@ -1,48 +1,36 @@
 "use client";
 
-import { Suspense, useEffect } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth";
-import { getAuthUrl, handleCallback } from "@/lib/api";
+import { getAuthUrl } from "@/lib/api";
 
-function LoginContent() {
-  const { login, user } = useAuth();
+export default function LoginPage() {
+  const { user, loading } = useAuth();
   const router = useRouter();
-  const searchParams = useSearchParams();
 
   useEffect(() => {
-    if (user) {
+    if (!loading && user) {
       router.push("/dashboard");
     }
-  }, [user, router]);
-
-  useEffect(() => {
-    const code = searchParams.get("code");
-    const state = searchParams.get("state");
-    const codeVerifier = searchParams.get("code_verifier");
-
-    if (code && state && codeVerifier) {
-      handleOAuthCallback(code, state, codeVerifier);
-    }
-  }, [searchParams]);
-
-  async function handleOAuthCallback(code: string, state: string, codeVerifier: string) {
-    try {
-      const data = await handleCallback(code, state, codeVerifier);
-      login(data.data.access_token, data.data.refresh_token, data.data.user);
-      router.push("/dashboard");
-    } catch (err) {
-      console.error("OAuth callback failed:", err);
-    }
-  }
+  }, [user, loading, router]);
 
   async function handleLogin() {
     try {
-      const data = await getAuthUrl();
+      const redirectUrl = encodeURIComponent(window.location.origin + "/dashboard");
+      const data = await getAuthUrl(redirectUrl);
       window.location.href = data.data.url;
     } catch (err) {
       console.error("Failed to initiate login:", err);
     }
+  }
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600" />
+      </div>
+    );
   }
 
   return (
@@ -63,13 +51,5 @@ function LoginContent() {
         </button>
       </div>
     </div>
-  );
-}
-
-export default function LoginPage() {
-  return (
-    <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading...</div>}>
-      <LoginContent />
-    </Suspense>
   );
 }

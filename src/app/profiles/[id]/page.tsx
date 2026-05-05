@@ -1,40 +1,53 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth";
 import { getProfile, deleteProfile } from "@/lib/api";
 
+interface ProfileData {
+  id: string;
+  name: string;
+  gender: string;
+  gender_probability: number;
+  age: number;
+  age_group: string;
+  country_id: string;
+  country_name: string;
+  country_probability: number;
+  created_at: string;
+}
+
 export default function ProfileDetailPage() {
   const { id } = useParams();
-  const { token, user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const router = useRouter();
-  const [profile, setProfile] = useState<any>(null);
+  const [profile, setProfile] = useState<ProfileData | null>(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    if (!token) {
-      router.push("/login");
-      return;
-    }
-    loadProfile();
-  }, [token, id]);
-
-  async function loadProfile() {
+  const loadProfile = useCallback(async () => {
     try {
-      const data = await getProfile(token!, id as string);
+      const data = await getProfile(id as string);
       setProfile(data.data);
     } catch {
       console.error("Failed to load profile");
     } finally {
       setLoading(false);
     }
-  }
+  }, [id]);
+
+  useEffect(() => {
+    if (!authLoading && !user) {
+      router.push("/login");
+      return;
+    }
+    if (user) loadProfile();
+  }, [user, authLoading, id, router, loadProfile]);
 
   async function handleDelete() {
     if (!confirm("Are you sure you want to delete this profile?")) return;
     try {
-      await deleteProfile(token!, id as string);
+      await deleteProfile(id as string);
       router.push("/profiles");
     } catch {
       console.error("Delete failed");

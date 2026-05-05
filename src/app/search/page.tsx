@@ -5,21 +5,33 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth";
 import { searchProfiles } from "@/lib/api";
 
+interface SearchResult {
+  id: string;
+  name: string;
+  gender: string;
+  age: number;
+  country_name: string;
+}
+
 export default function SearchPage() {
-  const { token } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const router = useRouter();
   const [query, setQuery] = useState("");
-  const [results, setResults] = useState<any[]>([]);
+  const [results, setResults] = useState<SearchResult[]>([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(false);
   const [searched, setSearched] = useState(false);
 
+  if (!authLoading && !user) {
+    router.push("/login");
+  }
+
   async function handleSearch() {
-    if (!query.trim() || !token) return;
+    if (!query.trim()) return;
     setLoading(true);
     setSearched(true);
     try {
-      const data = await searchProfiles(token!, query);
+      const data = await searchProfiles(query);
       setResults(data.data);
       setTotal(data.total);
     } catch {
@@ -71,7 +83,7 @@ export default function SearchPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
-                {results.map((p: any) => (
+                {results.map((p) => (
                   <tr
                     key={p.id}
                     className="hover:bg-gray-50 cursor-pointer"

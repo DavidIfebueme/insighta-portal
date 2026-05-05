@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useAuth } from "@/lib/auth";
 import { useRouter } from "next/navigation";
 import { listProfiles, exportProfiles } from "@/lib/api";
@@ -18,7 +18,7 @@ interface Profile {
 }
 
 export default function ProfilesPage() {
-  const { token, user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const router = useRouter();
   const [profiles, setProfiles] = useState<Profile[]>([]);
   const [page, setPage] = useState(1);
@@ -31,15 +31,7 @@ export default function ProfilesPage() {
   const [sortBy, setSortBy] = useState("created_at");
   const [order, setOrder] = useState("desc");
 
-  useEffect(() => {
-    if (!token) {
-      router.push("/login");
-      return;
-    }
-    loadProfiles();
-  }, [token, page, gender, country, ageGroup, sortBy, order]);
-
-  async function loadProfiles() {
+  const loadProfiles = useCallback(async () => {
     setLoading(true);
     try {
       const params: Record<string, string> = {
@@ -52,7 +44,7 @@ export default function ProfilesPage() {
       if (sortBy) params.sort_by = sortBy;
       if (order) params.order = order;
 
-      const data = await listProfiles(token!, params);
+      const data = await listProfiles(params);
       setProfiles(data.data);
       setTotal(data.total);
       setTotalPages(data.total_pages);
@@ -61,14 +53,22 @@ export default function ProfilesPage() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [page, gender, country, ageGroup, sortBy, order]);
+
+  useEffect(() => {
+    if (!authLoading && !user) {
+      router.push("/login");
+      return;
+    }
+    if (user) loadProfiles();
+  }, [user, authLoading, loadProfiles, router]);
 
   async function handleExport() {
     try {
       const params: Record<string, string> = {};
       if (gender) params.gender = gender;
       if (country) params.country_id = country;
-      const csv = await exportProfiles(token!, params);
+      const csv = await exportProfiles(params);
       const blob = new Blob([csv], { type: "text/csv" });
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");

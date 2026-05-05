@@ -14,30 +14,17 @@ interface Profile {
 }
 
 export default function DashboardPage() {
-  const { user, token } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const router = useRouter();
-  const [stats, setStats] = useState({ total: 0, male: 0, female: 0, countries: 0 });
   const [recent, setRecent] = useState<Profile[]>([]);
+  const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    if (!token) {
-      router.push("/login");
-      return;
-    }
-    loadDashboard();
-  }, [token]);
 
   async function loadDashboard() {
     try {
-      const data = await listProfiles(token!, { limit: "5", order: "desc" });
+      const data = await listProfiles({ limit: "5", order: "desc" });
       setRecent(data.data);
-      setStats({
-        total: data.total,
-        male: 0,
-        female: 0,
-        countries: 0,
-      });
+      setTotal(data.total);
     } catch {
       console.error("Failed to load dashboard");
     } finally {
@@ -45,7 +32,15 @@ export default function DashboardPage() {
     }
   }
 
-  if (loading) {
+  useEffect(() => {
+    if (!authLoading && !user) {
+      router.push("/login");
+      return;
+    }
+    if (user) loadDashboard();
+  }, [user, authLoading, router]);
+
+  if (loading || authLoading) {
     return (
       <div className="max-w-7xl mx-auto px-6 py-8">
         <div className="animate-pulse space-y-4">
@@ -67,7 +62,7 @@ export default function DashboardPage() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <div className="bg-white rounded-lg shadow p-6">
           <p className="text-sm text-gray-500">Total Profiles</p>
-          <p className="text-3xl font-bold text-indigo-600">{stats.total.toLocaleString()}</p>
+          <p className="text-3xl font-bold text-indigo-600">{total.toLocaleString()}</p>
         </div>
         <div className="bg-white rounded-lg shadow p-6">
           <p className="text-sm text-gray-500">Your Role</p>

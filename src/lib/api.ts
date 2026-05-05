@@ -1,23 +1,14 @@
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
 
-interface FetchOptions extends RequestInit {
-  token?: string;
-}
-
-async function apiFetch(path: string, options: FetchOptions = {}) {
-  const { token, ...fetchOptions } = options;
+async function apiFetch(path: string, options: RequestInit = {}) {
   const headers: Record<string, string> = {
     "X-API-Version": "1",
     "Content-Type": "application/json",
-    ...(fetchOptions.headers as Record<string, string>),
+    ...(options.headers as Record<string, string>),
   };
 
-  if (token) {
-    headers["Authorization"] = `Bearer ${token}`;
-  }
-
   const res = await fetch(`${API_URL}${path}`, {
-    ...fetchOptions,
+    ...options,
     headers,
     credentials: "include",
   });
@@ -30,78 +21,66 @@ async function apiFetch(path: string, options: FetchOptions = {}) {
   return res;
 }
 
-export async function getAuthUrl() {
-  const res = await apiFetch("/auth/github");
+export function getLoginUrl(redirectUrl: string) {
+  return `${API_URL}/auth/github?redirect_url=${encodeURIComponent(redirectUrl)}`;
+}
+
+export async function getAuthUrl(redirectUrl?: string) {
+  const path = redirectUrl
+    ? `/auth/github?redirect_url=${encodeURIComponent(redirectUrl)}`
+    : "/auth/github";
+  const res = await apiFetch(path);
   return res.json();
 }
 
-export async function handleCallback(code: string, state: string, code_verifier: string) {
-  const res = await apiFetch(
-    `/auth/github/callback?code=${code}&state=${state}&code_verifier=${code_verifier}`
-  );
+export async function getMe() {
+  const res = await apiFetch("/auth/me");
   return res.json();
 }
 
-export async function refreshToken(refresh_token: string) {
-  const res = await apiFetch("/auth/refresh", {
-    method: "POST",
-    body: JSON.stringify({ refresh_token }),
-  });
-  return res.json();
-}
-
-export async function logout(token: string, refresh_token: string) {
-  await apiFetch("/auth/logout", {
-    method: "POST",
-    token,
-    body: JSON.stringify({ refresh_token }),
-  });
-}
-
-export async function getMe(token: string) {
-  const res = await apiFetch("/auth/me", { token });
-  return res.json();
-}
-
-export async function listProfiles(token: string, params: Record<string, string> = {}) {
+export async function listProfiles(params: Record<string, string> = {}) {
   const qs = new URLSearchParams(params).toString();
-  const res = await apiFetch(`/api/profiles?${qs}`, { token });
+  const res = await apiFetch(`/api/profiles?${qs}`);
   return res.json();
 }
 
-export async function getProfile(token: string, id: string) {
-  const res = await apiFetch(`/api/profiles/${id}`, { token });
+export async function getProfile(id: string) {
+  const res = await apiFetch(`/api/profiles/${id}`);
   return res.json();
 }
 
-export async function searchProfiles(token: string, q: string, page = 1, limit = 10) {
+export async function searchProfiles(q: string, page = 1, limit = 10) {
   const res = await apiFetch(
-    `/api/profiles/search?q=${encodeURIComponent(q)}&page=${page}&limit=${limit}`,
-    { token }
+    `/api/profiles/search?q=${encodeURIComponent(q)}&page=${page}&limit=${limit}`
   );
   return res.json();
 }
 
-export async function createProfile(token: string, name: string) {
+export async function createProfile(name: string) {
   const res = await apiFetch("/api/profiles", {
     method: "POST",
-    token,
     body: JSON.stringify({ name }),
   });
   return res.json();
 }
 
-export async function deleteProfile(token: string, id: string) {
+export async function deleteProfile(id: string) {
   await apiFetch(`/api/profiles/${id}`, {
     method: "DELETE",
-    token,
   });
 }
 
-export async function exportProfiles(token: string, params: Record<string, string> = {}) {
+export async function exportProfiles(params: Record<string, string> = {}) {
   const qs = new URLSearchParams({ format: "csv", ...params }).toString();
-  const res = await apiFetch(`/api/profiles/export?${qs}`, { token });
+  const res = await apiFetch(`/api/profiles/export?${qs}`);
   return res.text();
+}
+
+export async function logout() {
+  await apiFetch("/auth/logout", {
+    method: "POST",
+    body: JSON.stringify({ refresh_token: "" }),
+  });
 }
 
 export { API_URL };
