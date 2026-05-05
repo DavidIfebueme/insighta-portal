@@ -1,6 +1,24 @@
 import { NextRequest, NextResponse } from "next/server";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
+const isProduction = process.env.NODE_ENV === "production";
+
+function validateCsrf(request: NextRequest): boolean {
+  const cookieToken = request.cookies.get("csrf_token")?.value;
+  if (!cookieToken) return false;
+  const headerToken = request.headers.get("x-csrf-token");
+  return !!headerToken && headerToken === cookieToken;
+}
+
+function cookieOptions(maxAge: number) {
+  return {
+    httpOnly: true,
+    secure: isProduction,
+    sameSite: "lax" as const,
+    path: "/",
+    maxAge,
+  };
+}
 
 export async function GET(
   request: NextRequest,
@@ -46,21 +64,9 @@ export async function GET(
           ? new NextResponse(res.body, { status: res.status, headers: { "content-type": "text/csv" } })
           : NextResponse.json(await res.json(), { status: res.status });
 
-        response.cookies.set("access_token", newAccess, {
-          httpOnly: true,
-          secure: true,
-          sameSite: "lax",
-          path: "/",
-          maxAge: 180,
-        });
+        response.cookies.set("access_token", newAccess, cookieOptions(180));
         if (newRefresh) {
-          response.cookies.set("refresh_token", newRefresh, {
-            httpOnly: true,
-            secure: true,
-            sameSite: "lax",
-            path: "/",
-            maxAge: 300,
-          });
+          response.cookies.set("refresh_token", newRefresh, cookieOptions(300));
         }
         return response;
       }
@@ -69,6 +75,7 @@ export async function GET(
     const response = NextResponse.json({ status: "error", message: "Unauthorized" }, { status: 401 });
     response.cookies.delete("access_token");
     response.cookies.delete("refresh_token");
+    response.cookies.delete("csrf_token");
     return response;
   }
 
@@ -87,6 +94,10 @@ export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ path: string[] }> }
 ) {
+  if (!validateCsrf(request)) {
+    return NextResponse.json({ status: "error", message: "CSRF validation failed" }, { status: 403 });
+  }
+
   const { path } = await params;
   const accessToken = request.cookies.get("access_token")?.value;
 
@@ -114,6 +125,10 @@ export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ path: string[] }> }
 ) {
+  if (!validateCsrf(request)) {
+    return NextResponse.json({ status: "error", message: "CSRF validation failed" }, { status: 403 });
+  }
+
   const { path } = await params;
   const accessToken = request.cookies.get("access_token")?.value;
 

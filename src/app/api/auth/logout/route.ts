@@ -16,5 +16,6 @@ export async function POST(request: NextRequest) {
   const response = NextResponse.json({ status: "success" });
   response.cookies.delete("access_token");
   response.cookies.delete("refresh_token");
+  response.cookies.delete("csrf_token");
   return response;
 }
