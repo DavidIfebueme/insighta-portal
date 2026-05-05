@@ -153,19 +153,19 @@ export default function ProfilesPage() {
       </div>
 
       {loading ? (
-        <div className="text-center py-8 text-gray-500">Loading...</div>
+        <div className="text-center py-8 text-gray-700">Loading...</div>
       ) : (
         <>
           <div className="bg-white rounded-lg shadow overflow-hidden">
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Name</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Gender</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Age</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Country</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Gender Prob</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Country Prob</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase">Name</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase">Gender</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase">Age</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase">Country</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase">Gender Prob</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase">Country Prob</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
@@ -176,11 +176,11 @@ export default function ProfilesPage() {
                     onClick={() => router.push(`/profiles/${p.id}`)}
                   >
                     <td className="px-6 py-4 text-sm font-medium text-gray-900">{p.name}</td>
-                    <td className="px-6 py-4 text-sm text-gray-500 capitalize">{p.gender}</td>
-                    <td className="px-6 py-4 text-sm text-gray-500">{p.age} ({p.age_group})</td>
-                    <td className="px-6 py-4 text-sm text-gray-500">{p.country_name} ({p.country_id})</td>
-                    <td className="px-6 py-4 text-sm text-gray-500">{(p.gender_probability * 100).toFixed(0)}%</td>
-                    <td className="px-6 py-4 text-sm text-gray-500">{(p.country_probability * 100).toFixed(0)}%</td>
+                    <td className="px-6 py-4 text-sm text-gray-700 capitalize">{p.gender}</td>
+                    <td className="px-6 py-4 text-sm text-gray-700">{p.age} ({p.age_group})</td>
+                    <td className="px-6 py-4 text-sm text-gray-700">{p.country_name} ({p.country_id})</td>
+                    <td className="px-6 py-4 text-sm text-gray-700">{(p.gender_probability * 100).toFixed(0)}%</td>
+                    <td className="px-6 py-4 text-sm text-gray-700">{(p.country_probability * 100).toFixed(0)}%</td>
                   </tr>
                 ))}
               </tbody>
@@ -188,7 +188,7 @@ export default function ProfilesPage() {
           </div>
 
           <div className="flex justify-between items-center mt-4">
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-gray-700">
               {total.toLocaleString()} profiles · Page {page} of {totalPages}
             </p>
             <div className="flex gap-2">

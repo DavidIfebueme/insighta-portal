@@ -62,24 +62,24 @@ export default function SearchPage() {
             Search
           </button>
         </div>
-        <p className="text-sm text-gray-400 mt-2">
+        <p className="text-sm text-gray-600 mt-2">
           Use natural language: gender, age group, country name
         </p>
       </div>
 
-      {loading && <div className="text-center py-8 text-gray-500">Searching...</div>}
+      {loading && <div className="text-center py-8 text-gray-700">Searching...</div>}
 
       {searched && !loading && (
         <>
-          <p className="text-sm text-gray-500 mb-4">{total} results for &quot;{query}&quot;</p>
+          <p className="text-sm text-gray-700 mb-4">{total} results for &quot;{query}&quot;</p>
           <div className="bg-white rounded-lg shadow overflow-hidden">
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Name</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Gender</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Age</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Country</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase">Name</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase">Gender</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase">Age</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase">Country</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
@@ -90,9 +90,9 @@ export default function SearchPage() {
                     onClick={() => router.push(`/profiles/${p.id}`)}
                   >
                     <td className="px-6 py-4 text-sm font-medium text-gray-900">{p.name}</td>
-                    <td className="px-6 py-4 text-sm text-gray-500 capitalize">{p.gender}</td>
-                    <td className="px-6 py-4 text-sm text-gray-500">{p.age}</td>
-                    <td className="px-6 py-4 text-sm text-gray-500">{p.country_name}</td>
+                    <td className="px-6 py-4 text-sm text-gray-700 capitalize">{p.gender}</td>
+                    <td className="px-6 py-4 text-sm text-gray-700">{p.age}</td>
+                    <td className="px-6 py-4 text-sm text-gray-700">{p.country_name}</td>
                   </tr>
                 ))}
               </tbody>

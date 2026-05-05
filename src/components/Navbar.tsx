@@ -42,7 +42,7 @@ export function Navbar() {
           </div>
         </div>
         <div className="flex items-center gap-3">
-          <span className="text-sm text-gray-500">@{user.username}</span>
+          <span className="text-sm text-gray-700">@{user.username}</span>
           <span className="text-xs bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded">
             {user.role}
           </span>
