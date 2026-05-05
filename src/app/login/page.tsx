@@ -17,7 +17,7 @@ export default function LoginPage() {
 
   async function handleLogin() {
     try {
-      const redirectUrl = encodeURIComponent(window.location.origin + "/dashboard");
+      const redirectUrl = window.location.origin + "/dashboard";
       const data = await getAuthUrl(redirectUrl);
       window.location.href = data.data.url;
     } catch (err) {
