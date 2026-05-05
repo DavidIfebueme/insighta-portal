@@ -15,7 +15,8 @@ export async function GET(
   }
 
   const backendPath = path.join("/");
-  const backendUrl = `${API_URL}/api/${backendPath}`;
+  const searchParams = new URL(request.url).searchParams.toString();
+  const backendUrl = `${API_URL}/api/${backendPath}${searchParams ? `?${searchParams}` : ""}`;
 
   const headers: Record<string, string> = {
     Authorization: `Bearer ${accessToken}`,
