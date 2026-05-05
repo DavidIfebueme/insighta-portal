@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
+import { randomUUID } from "crypto";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
+const isProduction = process.env.NODE_ENV === "production";
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
@@ -30,10 +32,11 @@ export async function GET(request: NextRequest) {
     }
 
     const response = NextResponse.redirect(new URL("/dashboard", request.url));
+    const csrfToken = randomUUID();
 
     response.cookies.set("access_token", accessToken, {
       httpOnly: true,
-      secure: true,
+      secure: isProduction,
       sameSite: "lax",
       path: "/",
       maxAge: 180,
@@ -41,7 +44,15 @@ export async function GET(request: NextRequest) {
 
     response.cookies.set("refresh_token", refreshToken, {
       httpOnly: true,
-      secure: true,
+      secure: isProduction,
+      sameSite: "lax",
+      path: "/",
+      maxAge: 300,
+    });
+
+    response.cookies.set("csrf_token", csrfToken, {
+      httpOnly: false,
+      secure: isProduction,
       sameSite: "lax",
       path: "/",
       maxAge: 300,

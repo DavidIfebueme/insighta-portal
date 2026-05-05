@@ -1,14 +1,14 @@
 "use client";
 
-import { useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/lib/auth";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
-
-export default function LoginPage() {
+function LoginForm() {
   const { user, loading } = useAuth();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const errorMsg = searchParams.get("error");
 
   useEffect(() => {
     if (!loading && user) {
@@ -18,7 +18,7 @@ export default function LoginPage() {
 
   function handleLogin() {
     const redirectUrl = encodeURIComponent(window.location.origin + "/api/auth/callback");
-    window.location.href = `${API_URL}/auth/github?redirect_url=${redirectUrl}`;
+    window.location.href = `/api/auth/login?redirect_url=${redirectUrl}`;
   }
 
   if (loading) {
@@ -36,6 +36,13 @@ export default function LoginPage() {
           <h1 className="text-3xl font-bold text-indigo-600">Insighta Labs+</h1>
           <p className="text-gray-500 mt-2">Profile Intelligence Platform</p>
         </div>
+
+        {errorMsg && (
+          <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded text-red-700 text-sm text-center">
+            Authentication failed. Please try again.
+          </div>
+        )}
+
         <button
           onClick={handleLogin}
           className="w-full flex items-center justify-center gap-3 bg-gray-900 text-white px-6 py-3 rounded-lg hover:bg-gray-800 transition"
@@ -47,5 +54,19 @@ export default function LoginPage() {
         </button>
       </div>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600" />
+        </div>
+      }
+    >
+      <LoginForm />
+    </Suspense>
   );
 }

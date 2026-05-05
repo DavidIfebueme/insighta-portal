@@ -1,6 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
+const isProduction = process.env.NODE_ENV === "production";
+
+function cookieOptions(maxAge: number) {
+  return {
+    httpOnly: true,
+    secure: isProduction,
+    sameSite: "lax" as const,
+    path: "/",
+    maxAge,
+  };
+}
 
 export async function GET(request: NextRequest) {
   const accessToken = request.cookies.get("access_token")?.value;
@@ -39,23 +50,9 @@ export async function GET(request: NextRequest) {
 
         const response = NextResponse.json(await res.json(), { status: res.status });
 
-        if (newAccess) {
-          response.cookies.set("access_token", newAccess, {
-            httpOnly: true,
-            secure: true,
-            sameSite: "lax",
-            path: "/",
-            maxAge: 180,
-          });
-        }
+        response.cookies.set("access_token", newAccess, cookieOptions(180));
         if (newRefresh) {
-          response.cookies.set("refresh_token", newRefresh, {
-            httpOnly: true,
-            secure: true,
-            sameSite: "lax",
-            path: "/",
-            maxAge: 300,
-          });
+          response.cookies.set("refresh_token", newRefresh, cookieOptions(300));
         }
 
         return response;
@@ -65,6 +62,7 @@ export async function GET(request: NextRequest) {
     const response = NextResponse.json({ status: "error", message: "Unauthorized" }, { status: 401 });
     response.cookies.delete("access_token");
     response.cookies.delete("refresh_token");
+    response.cookies.delete("csrf_token");
     return response;
   }
 
